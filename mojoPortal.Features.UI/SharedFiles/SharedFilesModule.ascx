@@ -172,7 +172,7 @@
 														<asp:Literal runat="server"
 															ID="litMod"
 															EnableViewState="false"
-															Text='<%# DateTimeHelper.GetTimeZoneAdjustedDateTimeString(((System.Data.DataRowView)Container.DataItem),"modified", TimeOffset, timeZone)%>' />
+															Text='<%# DateTimeHelper.GetTimeZoneAdjustedDateTimeString(((System.Data.DataRowView)Container.DataItem), "modified", TimeOffset, timeZone, DateTimeHelper.DefaultDateFormat)%>' />
 													</ItemTemplate>
 												</asp:TemplateField>
 

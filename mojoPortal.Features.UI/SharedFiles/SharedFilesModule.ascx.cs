@@ -109,7 +109,7 @@ namespace mojoPortal.Web.SharedFilesUI
 
 			DataView view = query.AsDataView();
 
-			view.Sort = $"type ASC, filename {config.DefaultSort}";
+			view.Sort = $"type ASC, modified {config.DefaultSort}";
 			dgFile.DataSource = view;
 			dgFile.DataBind();
 

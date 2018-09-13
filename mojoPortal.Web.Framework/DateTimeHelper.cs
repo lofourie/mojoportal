@@ -10,22 +10,21 @@
 //
 // You must not remove this notice, or any other, from this software.
 
+using log4net;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
-using log4net;
-using System.IO;
 
 namespace mojoPortal.Web.Framework
 {
     public static class DateTimeHelper
     {
     	private static readonly ILog log = LogManager.GetLogger(typeof(DateTimeHelper));
+
+        public static string DefaultDateFormat { get; set; } = "yyyy/MM/dd HH:mm:ss";
 
         //TimeZone documentation for 3.5 .NET
         //http://msdn.microsoft.com/en-us/library/bb397783.aspx
@@ -709,7 +708,7 @@ namespace mojoPortal.Web.Framework
         {
             String result = String.Empty;
             
-            log.Debug("GetTimeZoneAdjustedDateTimeString fieldname was " + fieldName);
+            log.Debug($"GetTimeZoneAdjustedDateTimeString fieldname was {fieldName} with format {{{formatPattern}}}");
 
 
             if (
@@ -774,10 +773,20 @@ namespace mojoPortal.Web.Framework
         }
 
         public static String GetTimeZoneAdjustedDateTimeString(
+           DataRowView dataRecord,
+           String fieldName,
+           double timeZoneOffset,
+           TimeZoneInfo timeZone)
+        {
+            return GetTimeZoneAdjustedDateTimeString(dataRecord, fieldName, timeZoneOffset, timeZone, DefaultDateFormat);
+        }
+
+        public static String GetTimeZoneAdjustedDateTimeString(
             DataRowView dataRecord,
             String fieldName,
             double timeZoneOffset,
-            TimeZoneInfo timeZone)
+            TimeZoneInfo timeZone,
+            string format)
         {
             String result = String.Empty;
 
@@ -791,17 +800,12 @@ namespace mojoPortal.Web.Framework
                 {
                     if (timeZone != null)
                     {
-                        result = Convert.ToDateTime(dataRecord[fieldName]).ToLocalTime(timeZone).ToString();
+                        result = Convert.ToDateTime(dataRecord[fieldName]).ToLocalTime(timeZone).ToString(format);
                     }
                     else
                     {
-                        result = Convert.ToDateTime(dataRecord[fieldName]).AddHours(timeZoneOffset).ToString();
+                        result = Convert.ToDateTime(dataRecord[fieldName]).AddHours(timeZoneOffset).ToString(format);
                     }
-                    //if (CultureInfo.CurrentCulture.Name == "fa-IR")
-                    //{
-                    //    PersianDateHelper dc = new PersianDateHelper();
-                    //    result = dc.MtoSh(Convert.ToDateTime(result));
-                    //}
                 }
                 catch (InvalidCastException)
                 { }
@@ -814,15 +818,7 @@ namespace mojoPortal.Web.Framework
 
         public static string LocalizeToCalendar(string dateText)
         {
-            //if (CultureInfo.CurrentCulture.Name == "fa-IR")
-            //{
-            //    PersianDateHelper dc = new PersianDateHelper();
-            //    dateText = dc.MtoSh(Convert.ToDateTime(dateText));
-            //}
-
             return dateText;
-
-
         }
 
         public static string GetDateTimeStringForFileName()
